@@ -1,0 +1,7 @@
+*.log
+*.ini
+*.pyc
+*.swp
+.ropeproject
+.idea
+_*
