@@ -161,12 +161,6 @@ class BfxConfig(SafeConfigParser):
         SafeConfigParser.__init__(self)
         self.load()
         self.init_defaults(self._DEFAULTS)
-        # upgrade from deprecated "currency" to "quote_currency"
-        # todo: remove this piece of code again in a few months
-        if self.has_option("bfx", "currency"):
-            self.set("bfx", "quote_currency", self.get_string("bfx", "currency"))
-            self.remove_option("bfx", "currency")
-            self.save()
 
     def init_defaults(self, defaults):
         """add the missing default values, default is a list of defaults"""
