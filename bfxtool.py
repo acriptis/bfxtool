@@ -1346,7 +1346,7 @@ class LogWriter():
         else:
             logfilemode = 'w'
 
-        logging.basicConfig(filename='bfxtool.log'
+        logging.basicConfig(filename='logs/bfxtool.log'
                            ,filemode=logfilemode
                            ,format='%(asctime)s:%(levelname)s:%(message)s'
                            ,level=logging.DEBUG
@@ -1592,7 +1592,7 @@ def main():
         # Before we do anything we dump stacktraces of all currently running
         # threads to a separate logfile because this helps debugging freezes
         # and deadlocks that might occur if things went totally wrong.
-        with open("bfxtool.stacktrace.log", "w") as stacklog:
+        with open("logs/bfxtool.stacktrace.log", "w") as stacklog:
             stacklog.write(dump_all_stacks())
 
         # we need the signal lock to be able to shut down. And we cannot
