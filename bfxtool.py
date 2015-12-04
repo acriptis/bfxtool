@@ -1391,6 +1391,8 @@ class PrintHook():
 #
 # dynamically (re)loadable strategy module
 #
+import importlib
+
 
 class StrategyManager():
     """load the strategy module"""
@@ -1414,20 +1416,28 @@ class StrategyManager():
 
             try:
                 strategy_module = __import__(name)
+                self._reload(strategy_module, name)
+            except ImportError:
                 try:
-                    reload(strategy_module)
-                    strategy_object = strategy_module.Strategy(self.bfx)
-                    self.strategy_object_list.append(strategy_object)
-                    if hasattr(strategy_object, "name"):
-                        self.bfx.strategies[strategy_object.name] = strategy_object
-
-                except Exception:
-                    self.bfx.debug("### error while loading strategy %s.py, traceback follows:" % name)
+                    #let's keep our strategies in strategies module
+                    lame = "strategies.%s" % name
+                    strategy_module = importlib.import_module(lame, package="strategies")
+                    self._reload(strategy_module, lame)
+                except ImportError:
+                    self.bfx.debug("### could not import %s.py, traceback follows:" % name)
                     self.bfx.debug(traceback.format_exc())
 
-            except ImportError:
-                self.bfx.debug("### could not import %s.py, traceback follows:" % name)
-                self.bfx.debug(traceback.format_exc())
+    def _reload(self, strategy_module, name):
+        """reloads module of strategy and updates strategies list"""
+        try:
+            reload(strategy_module)
+            strategy_object = strategy_module.Strategy(self.bfx)
+            self.strategy_object_list.append(strategy_object)
+            if hasattr(strategy_object, "name"):
+                self.bfx.strategies[strategy_object.name] = strategy_object
+        except Exception:
+            self.bfx.debug("### error while loading strategy %s.py, traceback follows:" % name)
+            self.bfx.debug(traceback.format_exc())
 
 
 def toggle_setting(bfx, alternatives, option_name, direction):
