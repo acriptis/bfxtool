@@ -1,5 +1,11 @@
 """
 trading robot breadboard
+
+To create your own strategy just
+1. copy this file and move the copy into strategies folder, rename it as you wish,
+2. fill the slots of strategy with your logic (usually slot_trade or slot_history_changed)
+3. launch the strategy bfxtool with your strategy:
+    ./bfxtool.py --strategy <your_strategy_file.py>
 """
 
 import bfxapi
@@ -38,6 +44,7 @@ class Strategy(bfxapi.BaseObject):
         to allow it to be properly garbage collected (you might need to do
         this if you instantiated linked lists or similar structures, the
         symptom would be that you don't see the 'unloaded' message above."""
+        self.debug("slot_before_unload")
         pass
 
     def slot_keypress(self, bfx, (key)):
@@ -45,10 +52,12 @@ class Strategy(bfxapi.BaseObject):
         The argument key contains the ascii code. To react to a certain
         key use something like if key == ord('a')
         """
+        self.debug("slot_keypress")
         pass
 
     def slot_tick(self, bfx, (bid, ask)):
         """a tick message has been received from the streaming API"""
+        self.debug("slot_tick")
         pass
 
     def slot_depth(self, bfx, (typ, price, volume, total_volume)):
@@ -57,6 +66,7 @@ class Strategy(bfxapi.BaseObject):
         for example want to log all depth messages to a database. This
         signal comes directly from the streaming API and the bfx.orderbook
         might not yet be updated at this time."""
+        #self.debug("slot_depth")
         pass
 
     def slot_trade(self, bfx, (date, price, volume, typ, own)):
@@ -64,11 +74,13 @@ class Strategy(bfxapi.BaseObject):
         directly from the streaming API, it might come before orderbook.owns
         list has been updated, don't rely on the own orders and wallet already
         having been updated when this is fired."""
+        self.debug("slot_trade")
         pass
 
     def slot_userorder(self, bfx, (price, volume, typ, oid, status)):
         """this comes directly from the API and owns list might not yet be
         updated, if you need the new owns list then use slot_owns_changed"""
+        self.debug("slot_userorder")
         pass
 
     def slot_owns_changed(self, orderbook, _dummy):
@@ -77,6 +89,7 @@ class Strategy(bfxapi.BaseObject):
         so the sender argument is orderbook and not bfx. This signal might be
         useful if you want to detect whether an order has been filled, you
         count open orders, count pending orders and compare with last count"""
+        self.debug("slot_owns_changed")
         pass
 
     def slot_wallet_changed(self, bfx, _dummy):
@@ -89,6 +102,7 @@ class Strategy(bfxapi.BaseObject):
         there will be multiple wallet signals after every trade. You can look
         into bfx.msg to inspect the original server message that triggered this
         signal to filter the flood a little bit."""
+        self.debug("slot_wallet_changed")
         pass
 
     def slot_history_changed(self, history, _dummy):
@@ -99,4 +113,5 @@ class Strategy(bfxapi.BaseObject):
         reconnects and re-downloads the trade history, you can use this
         to implement a stoploss or you could also use it for example to detect
         when a new candle is opened"""
+        self.debug("slot_history_changed")
         pass

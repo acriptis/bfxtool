@@ -570,9 +570,9 @@ class BaseClient(BaseObject):
     def get_unique_mirotime(self):
         """produce a unique nonce that is guaranteed to be ever increasing"""
         with self._nonce_lock:
-            #I don't know why but bitfinex accept nonce only from time of the future (may be timezone issue)
-            since_date = datetime.utcnow() + timedelta(minutes=15*100)
-            microtime  = timestamp=calendar.timegm(since_date.utctimetuple())
+            since_date = datetime.now()
+            microtime = calendar.timegm(since_date.timetuple())*10
+            #without multiplication to 10 bitfinex writes that nonce is too small sometimes...
             #microtime = int(time.time())
             if microtime <= self._last_unique_microtime:
                 microtime = self._last_unique_microtime + 1
@@ -1691,7 +1691,6 @@ class Bfx(BaseObject):
         self.signal_wallet(self, None)
         self.ready_info = True
         self.check_connect_ready()
-
 
     def _on_http_reqid_account_infos(self, msg):
         self.debug("### got account infos")
