@@ -1614,7 +1614,7 @@ class Bfx(BaseObject):
         updated_wallet = msg[2]
         updated_currency = updated_wallet[1]
         updated_balance = updated_wallet[2]
-        self.wallet[updated_currency] = updated_balance
+        self.wallet[updated_currency.upper()] = updated_balance
         self.signal_wallet(self, None)
 
 
@@ -1685,7 +1685,7 @@ class Bfx(BaseObject):
         bfx_wallet = msg["data"]
         self.wallet = {}
         for currency in bfx_wallet:
-            self.wallet[currency['currency']] = float(
+            self.wallet[currency['currency'].upper()] = float(
                 currency["amount"])
 
         self.signal_wallet(self, None)
